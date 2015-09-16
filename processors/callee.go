@@ -2,7 +2,7 @@ package processors
 
 import (
 	"fmt"
-	"loggo"
+	"github.com/mkabischev/loggo"
 	"path/filepath"
 	"runtime"
 	"strings"

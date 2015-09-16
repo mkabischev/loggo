@@ -1,6 +1,6 @@
 package handlers
 
-import "loggo"
+import "github.com/mkabischev/loggo"
 
 type MultiHandler struct {
 	handlers []loggo.IHandler

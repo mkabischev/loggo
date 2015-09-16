@@ -2,7 +2,7 @@ package handlers
 
 import (
 	"io"
-	"loggo"
+	"github.com/mkabischev/loggo"
 )
 
 type StreamHandler struct {

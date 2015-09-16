@@ -1,6 +1,6 @@
 package processors
 
-import "loggo"
+import "github.com/mkabischev/loggo"
 
 type FieldsProcessor struct {
 	fields map[string]interface{}

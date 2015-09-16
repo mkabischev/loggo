@@ -1,7 +1,7 @@
 package handlers
 
 import (
-	"loggo"
+	"github.com/mkabischev/loggo"
 	"sync"
 )
 
