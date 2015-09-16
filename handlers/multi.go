@@ -12,10 +12,17 @@ func NewMultiHandler(handlers ...loggo.IHandler) *MultiHandler {
 	}
 }
 
-func (h *MultiHandler) Handle(entry *loggo.Entry) error {
+func (h *MultiHandler) Handle(entry *loggo.Entry) {
 	for _, handler := range h.handlers {
 		handler.Handle(entry)
 	}
+}
 
-	return nil
+func (h *MultiHandler) Copy() loggo.IHandler {
+	handlers := make([]loggo.IHandler, len(h.handlers))
+	for i, handler := range h.handlers {
+		handlers[i] = handler.Copy()
+	}
+
+	return NewMultiHandler(handlers...)
 }

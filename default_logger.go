@@ -21,6 +21,19 @@ func New(name string, handler IHandler) *DefaultLogger {
 	}
 }
 
+func (l *DefaultLogger) Copy() *DefaultLogger {
+	processors := make([]IProcessor, len(l.processors))
+	for i, processor := range l.processors {
+		processors[i] = processor
+	}
+
+	return &DefaultLogger{
+		name:       l.name,
+		handler:    l.handler.Copy(),
+		processors: processors,
+	}
+}
+
 // AddProcessor adds entry processor to logger
 func (l *DefaultLogger) AddProcessor(processors ...IProcessor) {
 	l.processors = append(l.processors, processors...)

@@ -26,3 +26,7 @@ func (h *StreamHandler) Handle(entry *loggo.Entry) {
 
 	h.out.Write(h.formatter.Format(entry))
 }
+
+func (h *StreamHandler) Copy() loggo.IHandler {
+	return h
+}

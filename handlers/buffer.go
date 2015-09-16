@@ -33,3 +33,7 @@ func (h *BufferHandler) Handle(entry *loggo.Entry) {
 		h.buffer = make([]*loggo.Entry, 0, 128)
 	}
 }
+
+func (h *BufferHandler) Copy() loggo.IHandler {
+	return NewBufferHandler(h.handler.Copy(), h.level)
+}
