@@ -38,7 +38,12 @@ func (l *DefaultLogger) Log(level Level, args ...interface{}) {
 
 // Logf logs new entry with specified level
 func (l *DefaultLogger) Logf(level Level, format string, args ...interface{}) {
-	l.Log(level, fmt.Sprintf(format, args...))
+	entry := NewEntry(level, time.Now(), fmt.Sprintf(format, args...))
+	for _, processor := range l.processors {
+		processor.Process(entry)
+	}
+	entry.Fields["_module"] = l.name
+	l.handler.Handle(entry)
 }
 
 // Debug alias for log with debug level
@@ -83,40 +88,40 @@ func (l *DefaultLogger) Emergency(args ...interface{}) {
 
 // Debugf alias for log with debug level
 func (l *DefaultLogger) Debugf(format string, args ...interface{}) {
-	l.Log(LevelDebug, args...)
+	l.Logf(LevelDebug, format, args...)
 }
 
 // Infof alias for log with info level
 func (l *DefaultLogger) Infof(format string, args ...interface{}) {
-	l.Log(LevelInfo, args...)
+	l.Logf(LevelInfo, format, args...)
 }
 
 // Noticef alias for log with notice level
 func (l *DefaultLogger) Noticef(format string, args ...interface{}) {
-	l.Log(LevelNotice, args...)
+	l.Logf(LevelNotice, format, args...)
 }
 
 // Warningf alias for log with warning level
 func (l *DefaultLogger) Warningf(format string, args ...interface{}) {
-	l.Log(LevelWarning, args...)
+	l.Logf(LevelWarning, format, args...)
 }
 
 // Errorf alias for log with error level
 func (l *DefaultLogger) Errorf(format string, args ...interface{}) {
-	l.Log(LevelError, args...)
+	l.Logf(LevelError, format, args...)
 }
 
 // Criticalf alias for log with critical level
 func (l *DefaultLogger) Criticalf(format string, args ...interface{}) {
-	l.Log(LevelCritical, args...)
+	l.Logf(LevelCritical, format, args...)
 }
 
 // Alertf alias for log with alert level
 func (l *DefaultLogger) Alertf(format string, args ...interface{}) {
-	l.Log(LevelAlert, args...)
+	l.Logf(LevelAlert, format, args...)
 }
 
 // Emergencyf alias for log with emergency level
 func (l *DefaultLogger) Emergencyf(format string, args ...interface{}) {
-	l.Log(LevelEmergency, args...)
+	l.Logf(LevelEmergency, format, args...)
 }

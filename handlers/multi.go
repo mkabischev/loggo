@@ -14,9 +14,7 @@ func NewMultiHandler(handlers ...loggo.IHandler) *MultiHandler {
 
 func (h *MultiHandler) Handle(entry *loggo.Entry) error {
 	for _, handler := range h.handlers {
-		if err := handler.Handle(entry); err != nil {
-			return err
-		}
+		handler.Handle(entry)
 	}
 
 	return nil

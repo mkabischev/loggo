@@ -20,20 +20,16 @@ func NewBufferHandler(handler loggo.IHandler, level loggo.Level) *BufferHandler 
 	}
 }
 
-func (h *BufferHandler) Handle(entry *loggo.Entry) error {
+func (h *BufferHandler) Handle(entry *loggo.Entry) {
 	h.lock.Lock()
 	defer h.lock.Unlock()
 
 	h.buffer = append(h.buffer, entry)
 	if entry.Level >= h.level {
 		for _, e := range h.buffer {
-			if err := h.handler.Handle(e); err != nil {
-				return err
-			}
+			h.handler.Handle(e)
 		}
 
 		h.buffer = make([]*loggo.Entry, 0, 128)
 	}
-
-	return nil
 }

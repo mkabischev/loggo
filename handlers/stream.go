@@ -19,14 +19,10 @@ func NewStreamHandler(level loggo.Level, out io.Writer, formatter loggo.IFormatt
 	}
 }
 
-func (h *StreamHandler) Handle(entry *loggo.Entry) error {
+func (h *StreamHandler) Handle(entry *loggo.Entry) {
 	if entry.Level < h.level {
-		return nil
+		return
 	}
 
-	if _, err := h.out.Write(h.formatter.Format(entry)); err != nil {
-		return err
-	}
-
-	return nil
+	h.out.Write(h.formatter.Format(entry))
 }
