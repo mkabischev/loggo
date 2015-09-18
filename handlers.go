@@ -1,7 +1,8 @@
 package loggo
+
 import (
-	"sync"
 	"io"
+	"sync"
 )
 
 // IHandler interface
@@ -93,4 +94,3 @@ func (h *StreamHandler) Handle(entry *Entry) {
 func (h *StreamHandler) Copy() IHandler {
 	return h
 }
-

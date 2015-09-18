@@ -12,11 +12,6 @@ type IFormatter interface {
 	Format(entry *Entry) []byte
 }
 
-//// LegacyFormatter simple formatter
-//type LegacyFormatter struct {
-//	format string
-//}
-
 // TextFormatter simple formatter
 type TextFormatter struct {
 	format string
@@ -37,9 +32,11 @@ func (f *TextFormatter) Format(entry *Entry) []byte {
 
 	replaces := make([]string, 0, 2+len(entry.Fields))
 	replaces = append(
-		replaces, ":time:", entry.Time.Format("2006-01-02 15:04:05.000000"),
+		replaces,
+		":level:", entry.Level.String(),
+		":time:", entry.Time.Format("2006-01-02 15:04:05.000000"),
 		":message:", entry.Message,
-		//		":additional:", additionalBuf.String(),
+		":additional:", additionalBuf.String(),
 	)
 
 	for key, value := range entry.Fields {

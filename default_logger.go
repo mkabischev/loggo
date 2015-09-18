@@ -2,8 +2,11 @@ package loggo
 
 import (
 	"fmt"
+	"os"
 	"time"
 )
+
+var DefaultHandler = NewStreamHandler(LevelDebug, os.Stdout, NewTextFormatter("[:time:] (:level:) :message:"))
 
 // DefaultLogger default implementation of ILogger interface
 type DefaultLogger struct {
