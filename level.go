@@ -3,7 +3,7 @@ package loggo
 type Level uint8
 
 const (
-	LevelDebug = iota
+	LevelDebug Level = iota
 	LevelInfo
 	LevelNotice
 	LevelWarning

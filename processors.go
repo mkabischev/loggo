@@ -1,20 +1,28 @@
-package processors
+package loggo
 
 import (
 	"fmt"
-	"github.com/mkabischev/loggo"
 	"path/filepath"
 	"runtime"
 	"strings"
 )
 
+type IProcessor interface {
+	Process(entry *Entry)
+}
+
+// CalleeProcessor adds packageName and filename to entry fields
 type CalleeProcessor struct{}
 
+// NewCalleeProcessor constructor for CalleeProcessor
 func NewCalleeProcessor() *CalleeProcessor {
 	return &CalleeProcessor{}
 }
 
-func (p *CalleeProcessor) Process(entry *loggo.Entry) {
+// Process adds two fields to entry:
+// _package - name of package where logger was called
+// _file - file:line where logger was called
+func (p *CalleeProcessor) Process(entry *Entry) {
 	entry.Fields["_package"] = getPackageName()
 	entry.Fields["_file"] = getFileName()
 }
@@ -50,4 +58,18 @@ func formatFuncName(f string) string {
 	}
 
 	return f[:i+j+1]
+}
+
+type FieldsProcessor struct {
+	fields map[string]interface{}
+}
+
+func NewFieldsProcessor(fields map[string]interface{}) *FieldsProcessor {
+	return &FieldsProcessor{
+		fields: fields,
+	}
+}
+
+func (p *FieldsProcessor) Process(entry *Entry) {
+	entry.Fields = p.fields
 }

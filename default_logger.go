@@ -22,15 +22,10 @@ func New(name string, handler IHandler) *DefaultLogger {
 }
 
 func (l *DefaultLogger) Copy() *DefaultLogger {
-	processors := make([]IProcessor, len(l.processors))
-	for i, processor := range l.processors {
-		processors[i] = processor
-	}
-
 	return &DefaultLogger{
 		name:       l.name,
 		handler:    l.handler.Copy(),
-		processors: processors,
+		processors: l.processors,
 	}
 }
 
@@ -51,12 +46,7 @@ func (l *DefaultLogger) Log(level Level, args ...interface{}) {
 
 // Logf logs new entry with specified level
 func (l *DefaultLogger) Logf(level Level, format string, args ...interface{}) {
-	entry := NewEntry(level, time.Now(), fmt.Sprintf(format, args...))
-	for _, processor := range l.processors {
-		processor.Process(entry)
-	}
-	entry.Fields["_module"] = l.name
-	l.handler.Handle(entry)
+	l.Log(level, fmt.Sprintf(format, args...))
 }
 
 // Debug alias for log with debug level

@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
+	"strings"
 )
 
 // IFormatter formatters convert entries to []byte and used by handlers
@@ -11,34 +12,52 @@ type IFormatter interface {
 	Format(entry *Entry) []byte
 }
 
+//// LegacyFormatter simple formatter
+//type LegacyFormatter struct {
+//	format string
+//}
+
 // TextFormatter simple formatter
-type TextFormatter struct{}
-
-// Format formats entry to common format
-func (f *TextFormatter) Format(entry *Entry) []byte {
-	b := &bytes.Buffer{}
-	time := entry.Time.Format("2006-01-02 15:04:05.000000")
-	traceID := f.getEntryField(entry, "_traceID", 0)
-	parentSpanID := f.getEntryField(entry, "_parentSpanID", 0)
-	spanID := f.getEntryField(entry, "_spanID", 0)
-	module := f.getEntryField(entry, "_module", "???")
-	level := entry.Level
-	pkg := f.getEntryField(entry, "_package", "???")
-	file := f.getEntryField(entry, "_file", "???")
-
-	fmt.Fprintf(b, "[%s] %X %X %X %s (%s) %s %s: %s ", time, traceID, parentSpanID, spanID, module, level, pkg, file, entry.Message)
-
-	data := f.filterEntryFields(entry)
-	if marshaledData, err := json.Marshal(data); err == nil {
-		b.Write(marshaledData)
-	}
-
-	b.WriteByte('\n')
-
-	return b.Bytes()
+type TextFormatter struct {
+	format string
 }
 
-func (f *TextFormatter) filterEntryFields(entry *Entry) map[string]interface{} {
+func NewTextFormatter(format string) *TextFormatter {
+	return &TextFormatter{format: format}
+}
+
+func (f *TextFormatter) Format(entry *Entry) []byte {
+	result := f.format
+
+	additionalBuf := &bytes.Buffer{}
+	data := filterEntryFields(entry)
+	if marshaledData, err := json.Marshal(data); err == nil {
+		additionalBuf.Write(marshaledData)
+	}
+
+	replaces := make([]string, 0, 2+len(entry.Fields))
+	replaces = append(
+		replaces, ":time:", entry.Time.Format("2006-01-02 15:04:05.000000"),
+		":message:", entry.Message,
+		//		":additional:", additionalBuf.String(),
+	)
+
+	for key, value := range entry.Fields {
+		replaces = append(replaces, fmt.Sprintf(":%s:", key), fmt.Sprintf("%s", value))
+	}
+
+	replacer := strings.NewReplacer(replaces...)
+
+	buf := &bytes.Buffer{}
+
+	replacer.WriteString(buf, result)
+
+	buf.WriteByte('\n')
+
+	return buf.Bytes()
+}
+
+func filterEntryFields(entry *Entry) map[string]interface{} {
 	result := make(map[string]interface{}, len(entry.Fields))
 
 	for key, value := range entry.Fields {
@@ -48,12 +67,4 @@ func (f *TextFormatter) filterEntryFields(entry *Entry) map[string]interface{} {
 	}
 
 	return result
-}
-
-func (f *TextFormatter) getEntryField(entry *Entry, field string, defaultValue interface{}) interface{} {
-	if value, ok := entry.Fields[field]; ok {
-		return value
-	}
-
-	return defaultValue
 }
