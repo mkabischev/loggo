@@ -2,6 +2,7 @@ package loggo
 
 import (
 	"io"
+    "os"
 	"sync"
 )
 
@@ -75,10 +76,20 @@ type StreamHandler struct {
 	formatter IFormatter
 }
 
-func NewStreamHandler(level Level, out io.Writer, formatter IFormatter) *StreamHandler {
+// NewStreamHandler returns new StreamHandler.
+// If out is not passed - stdout will be used
+func NewStreamHandler(level Level, formatter IFormatter, out ...io.Writer) *StreamHandler {
+    var outputWriter io.Writer
+
+    if len(out) > 0 {
+        outputWriter = out[0]
+    } else {
+        outputWriter = os.Stdout
+    }
+
 	return &StreamHandler{
 		level:     level,
-		out:       out,
+		out:       outputWriter,
 		formatter: formatter,
 	}
 }
