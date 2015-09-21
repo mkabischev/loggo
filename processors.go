@@ -71,5 +71,7 @@ func NewFieldsProcessor(fields map[string]interface{}) *FieldsProcessor {
 }
 
 func (p *FieldsProcessor) Process(entry *Entry) {
-	entry.Fields = p.fields
+	for key, value := range p.fields {
+		entry.Fields[key] = value
+	}
 }
