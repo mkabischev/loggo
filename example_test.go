@@ -1,9 +1,7 @@
 package loggo
 
-import "os"
-
 func ExampleSimpleUsage() {
-	logger := New("GOB", NewStreamHandler(LevelDebug, os.Stdout, NewTextFormatter("(:level:) :message:")))
+	logger := New("MyLogger", NewStreamHandler(LevelDebug, NewTextFormatter("(:level:) :message:")))
 	logger.Debug("hello debug")
 	logger.Info("hello info")
 
@@ -13,8 +11,8 @@ func ExampleSimpleUsage() {
 }
 
 func ExampleBufferEmpty() {
-	handler :=  NewStreamHandler(LevelDebug, os.Stdout, NewTextFormatter("(:level:) :message:"))
-	logger := New("GOB", NewBufferHandler(handler, LevelWarning))
+	handler := NewStreamHandler(LevelDebug, NewTextFormatter("(:level:) :message:"))
+	logger := New("MyLogger", NewBufferHandler(handler, LevelWarning))
 	logger.Debug("hello debug")
 	logger.Info("hello info")
 
@@ -22,14 +20,13 @@ func ExampleBufferEmpty() {
 }
 
 func ExampleBuffer() {
-	handler :=  NewStreamHandler(LevelDebug, os.Stdout, NewTextFormatter("(:level:) :message:"))
-	logger := New("GOB", NewBufferHandler(handler, LevelWarning))
+	handler := NewStreamHandler(LevelInfo, NewTextFormatter("(:level:) :message:"))
+	logger := New("MyLogger", NewBufferHandler(handler, LevelWarning))
 	logger.Debug("hello debug")
 	logger.Info("hello info")
 	logger.Warning("hello warning")
 
 	// Output:
-	// (DEBUG) hello debug
 	// (INFO) hello info
 	// (WARNING) hello warning
 }

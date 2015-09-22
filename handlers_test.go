@@ -7,7 +7,7 @@ import (
 	. "gopkg.in/check.v1"
 )
 
-type HandlersTestSuite struct{
+type HandlersTestSuite struct {
 	rawFormatter IFormatter
 }
 
@@ -19,10 +19,9 @@ func (h *HandlersTestSuite) SetUpSuite(c *C) {
 	h.rawFormatter = NewTextFormatter(":message:")
 }
 
-
 func (s *HandlersTestSuite) TestStreamHandlerHandle(c *C) {
 	buf := &bytes.Buffer{}
-	handler := NewStreamHandler(LevelDebug, buf, s.rawFormatter)
+	handler := NewStreamHandler(LevelDebug, s.rawFormatter, buf)
 	handler.Handle(NewEntry(LevelDebug, time.Now(), "hello"))
 	handler.Handle(NewEntry(LevelInfo, time.Now(), "man"))
 
@@ -31,7 +30,7 @@ func (s *HandlersTestSuite) TestStreamHandlerHandle(c *C) {
 
 func (s *HandlersTestSuite) TestStreamHandlerHandleLowLevel(c *C) {
 	buf := &bytes.Buffer{}
-	handler := NewStreamHandler(LevelInfo, buf, s.rawFormatter)
+	handler := NewStreamHandler(LevelInfo, s.rawFormatter, buf)
 	handler.Handle(NewEntry(LevelDebug, time.Now(), "hello"))
 	handler.Handle(NewEntry(LevelInfo, time.Now(), "man"))
 
@@ -40,14 +39,14 @@ func (s *HandlersTestSuite) TestStreamHandlerHandleLowLevel(c *C) {
 
 func (s *HandlersTestSuite) TestStreamHandlerCopy(c *C) {
 	buf := &bytes.Buffer{}
-	handler := NewStreamHandler(LevelInfo, buf, s.rawFormatter)
+	handler := NewStreamHandler(LevelInfo, s.rawFormatter, buf)
 
 	c.Assert(handler.Copy(), Equals, handler)
 }
 
 func (s *HandlersTestSuite) TestBufferHandlerHandle(c *C) {
 	buf := &bytes.Buffer{}
-	streamHandler := NewStreamHandler(LevelDebug, buf, s.rawFormatter)
+	streamHandler := NewStreamHandler(LevelDebug, s.rawFormatter, buf)
 
 	handler := NewBufferHandler(streamHandler, LevelWarning)
 	handler.Handle(NewEntry(LevelDebug, time.Now(), "debug"))
@@ -59,7 +58,7 @@ func (s *HandlersTestSuite) TestBufferHandlerHandle(c *C) {
 
 func (s *HandlersTestSuite) TestBufferHandlerHandleLowLevel(c *C) {
 	buf := &bytes.Buffer{}
-	streamHandler := NewStreamHandler(LevelDebug, buf, s.rawFormatter)
+	streamHandler := NewStreamHandler(LevelDebug, s.rawFormatter, buf)
 
 	handler := NewBufferHandler(streamHandler, LevelWarning)
 	handler.Handle(NewEntry(LevelDebug, time.Now(), "debug"))
@@ -73,16 +72,16 @@ func (s *HandlersTestSuite) TestBufferHandlerCopy(c *C) {
 	bufferHandler := NewBufferHandler(handler, LevelWarning)
 	copy := bufferHandler.Copy().(*BufferHandler)
 	c.Assert(copy, Not(Equals), bufferHandler)
-	c.Assert(copy.level, Equals, bufferHandler.level)
+	c.Assert(copy.flushLevel, Equals, bufferHandler.flushLevel)
 	c.Assert(copy.handler.(*handlerForCopy).original, Equals, handler)
 }
 
 func (s *HandlersTestSuite) TestMultiHandlerHandle(c *C) {
 	buf := &bytes.Buffer{}
-	streamHandler := NewStreamHandler(LevelDebug, buf, s.rawFormatter)
+	streamHandler := NewStreamHandler(LevelDebug, s.rawFormatter, buf)
 
 	buf2 := &bytes.Buffer{}
-	streamHandler2 := NewStreamHandler(LevelInfo, buf2, s.rawFormatter)
+	streamHandler2 := NewStreamHandler(LevelInfo, s.rawFormatter, buf2)
 
 	handler := NewMultiHandler(streamHandler, streamHandler2)
 	handler.Handle(NewEntry(LevelDebug, time.Now(), "debug"))

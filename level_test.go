@@ -19,7 +19,7 @@ func (s *LevelTestSuite) TestString(c *C) {
 		LevelCritical:  "CRITICAL",
 		LevelAlert:     "ALERT",
 		LevelEmergency: "EMERGENCY",
-		Level(10):  "UNKNOWN",
+		Level(10):      "UNKNOWN",
 	}
 
 	for level, name := range levels {
