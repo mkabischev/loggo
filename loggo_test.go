@@ -17,6 +17,7 @@ func (p *testProcessor) Process(entry *Entry) {
 }
 
 type testHandler struct {
+	Level   Level
 	entries []*Entry
 }
 
@@ -28,6 +29,10 @@ func (h *testHandler) Copy() IHandler {
 	return h
 }
 
+func (h *testHandler) IsEnabledFor(level Level) bool {
+	return level >= h.Level
+}
+
 type handlerForCopy struct {
 	original IHandler
 }
@@ -37,4 +42,8 @@ func (h *handlerForCopy) Handle(entry *Entry) {
 
 func (h *handlerForCopy) Copy() IHandler {
 	return &handlerForCopy{original: h}
+}
+
+func (h *handlerForCopy) IsEnabledFor(level Level) bool {
+	return h.original.IsEnabledFor(level)
 }

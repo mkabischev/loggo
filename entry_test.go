@@ -6,7 +6,7 @@ import (
 	. "gopkg.in/check.v1"
 )
 
-type EntryTestSuite struct {}
+type EntryTestSuite struct{}
 
 var (
 	_ = Suite(&EntryTestSuite{})

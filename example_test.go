@@ -11,7 +11,7 @@ func ExampleSimpleUsage() {
 }
 
 func ExampleBufferEmpty() {
-	handler :=  NewStreamHandler(LevelDebug, NewTextFormatter("(:level:) :message:"))
+	handler := NewStreamHandler(LevelDebug, NewTextFormatter("(:level:) :message:"))
 	logger := New("MyLogger", NewBufferHandler(handler, LevelWarning))
 	logger.Debug("hello debug")
 	logger.Info("hello info")
@@ -20,14 +20,13 @@ func ExampleBufferEmpty() {
 }
 
 func ExampleBuffer() {
-	handler :=  NewStreamHandler(LevelDebug, NewTextFormatter("(:level:) :message:"))
+	handler := NewStreamHandler(LevelInfo, NewTextFormatter("(:level:) :message:"))
 	logger := New("MyLogger", NewBufferHandler(handler, LevelWarning))
 	logger.Debug("hello debug")
 	logger.Info("hello info")
 	logger.Warning("hello warning")
 
 	// Output:
-	// (DEBUG) hello debug
 	// (INFO) hello info
 	// (WARNING) hello warning
 }

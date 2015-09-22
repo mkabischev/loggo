@@ -108,6 +108,53 @@ func (s *LoggerTestSuite) TestEmergencyf(c *C) {
 	s.assertSingleEntry(c, LevelEmergency, "hello, man")
 }
 
+func (s *LoggerTestSuite) TestIsDebugEnabled(c *C) {
+	s.logger = New("test", &testHandler{Level: LevelDebug})
+	c.Assert(s.logger.IsDebugEnabled(), Equals, true)
+}
+
+func (s *LoggerTestSuite) TestIsInfoEnabled(c *C) {
+	s.logger = New("test", &testHandler{Level: LevelInfo})
+	c.Assert(s.logger.IsDebugEnabled(), Equals, false)
+	c.Assert(s.logger.IsInfoEnabled(), Equals, true)
+}
+
+func (s *LoggerTestSuite) TestIsNoticeEnabled(c *C) {
+	s.logger = New("test", &testHandler{Level: LevelNotice})
+	c.Assert(s.logger.IsInfoEnabled(), Equals, false)
+	c.Assert(s.logger.IsNoticeEnabled(), Equals, true)
+}
+
+func (s *LoggerTestSuite) TestIsWarningEnabled(c *C) {
+	s.logger = New("test", &testHandler{Level: LevelWarning})
+	c.Assert(s.logger.IsNoticeEnabled(), Equals, false)
+	c.Assert(s.logger.IsWarningEnabled(), Equals, true)
+}
+
+func (s *LoggerTestSuite) TestIsErrorEnabled(c *C) {
+	s.logger = New("test", &testHandler{Level: LevelError})
+	c.Assert(s.logger.IsWarningEnabled(), Equals, false)
+	c.Assert(s.logger.IsErrorEnabled(), Equals, true)
+}
+
+func (s *LoggerTestSuite) TestIsCriticalEnabled(c *C) {
+	s.logger = New("test", &testHandler{Level: LevelCritical})
+	c.Assert(s.logger.IsErrorEnabled(), Equals, false)
+	c.Assert(s.logger.IsCriticalEnabled(), Equals, true)
+}
+
+func (s *LoggerTestSuite) TestIsAlertEnabled(c *C) {
+	s.logger = New("test", &testHandler{Level: LevelAlert})
+	c.Assert(s.logger.IsCriticalEnabled(), Equals, false)
+	c.Assert(s.logger.IsAlertEnabled(), Equals, true)
+}
+
+func (s *LoggerTestSuite) TestIsEmergencyEnabled(c *C) {
+	s.logger = New("test", &testHandler{Level: LevelEmergency})
+	c.Assert(s.logger.IsAlertEnabled(), Equals, false)
+	c.Assert(s.logger.IsEmergencyEnabled(), Equals, true)
+}
+
 func (s *LoggerTestSuite) TestAddProcessor(c *C) {
 	processor1 := &testProcessor{}
 	processor2 := &testProcessor{}

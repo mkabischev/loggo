@@ -7,7 +7,7 @@ import (
 	. "gopkg.in/check.v1"
 )
 
-type HandlersTestSuite struct{
+type HandlersTestSuite struct {
 	rawFormatter IFormatter
 }
 
@@ -18,7 +18,6 @@ var (
 func (h *HandlersTestSuite) SetUpSuite(c *C) {
 	h.rawFormatter = NewTextFormatter(":message:")
 }
-
 
 func (s *HandlersTestSuite) TestStreamHandlerHandle(c *C) {
 	buf := &bytes.Buffer{}
@@ -73,7 +72,7 @@ func (s *HandlersTestSuite) TestBufferHandlerCopy(c *C) {
 	bufferHandler := NewBufferHandler(handler, LevelWarning)
 	copy := bufferHandler.Copy().(*BufferHandler)
 	c.Assert(copy, Not(Equals), bufferHandler)
-	c.Assert(copy.level, Equals, bufferHandler.level)
+	c.Assert(copy.flushLevel, Equals, bufferHandler.flushLevel)
 	c.Assert(copy.handler.(*handlerForCopy).original, Equals, handler)
 }
 

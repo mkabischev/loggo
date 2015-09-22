@@ -8,41 +8,57 @@ import (
 var DefaultHandler = NewStreamHandler(LevelDebug, NewTextFormatter("[:time:] (:level:) :message:"))
 
 type ILogger interface {
-    Debugf(format string, args ...interface{})
+	Debugf(format string, args ...interface{})
 
-    Infof(format string, args ...interface{})
+	Infof(format string, args ...interface{})
 
-    Noticef(format string, args ...interface{})
+	Noticef(format string, args ...interface{})
 
-    Warningf(format string, args ...interface{})
+	Warningf(format string, args ...interface{})
 
-    Errorf(format string, args ...interface{})
+	Errorf(format string, args ...interface{})
 
-    Alertf(format string, args ...interface{})
+	Alertf(format string, args ...interface{})
 
-    Criticalf(format string, args ...interface{})
+	Criticalf(format string, args ...interface{})
 
-    Emergencyf(format string, args ...interface{})
+	Emergencyf(format string, args ...interface{})
 
-    Logf(level Level, format string, args ...interface{})
+	Logf(level Level, format string, args ...interface{})
 
-    Debug(args ...interface{})
+	Debug(args ...interface{})
 
-    Info(args ...interface{})
+	Info(args ...interface{})
 
-    Notice(args ...interface{})
+	Notice(args ...interface{})
 
-    Warning(args ...interface{})
+	Warning(args ...interface{})
 
-    Error(args ...interface{})
+	Error(args ...interface{})
 
-    Alert(args ...interface{})
+	Alert(args ...interface{})
 
-    Critical(args ...interface{})
+	Critical(args ...interface{})
 
-    Emergency(args ...interface{})
+	Emergency(args ...interface{})
 
-    Log(level Level, args ...interface{})
+	Log(level Level, args ...interface{})
+
+	IsDebugEnabled() bool
+
+	IsInfoEnabled() bool
+
+	IsNoticeEnabled() bool
+
+	IsWarningEnabled() bool
+
+	IsErrorEnabled() bool
+
+	IsAlertEnabled() bool
+
+	IsCriticalEnabled() bool
+
+	IsEmergencyEnabled() bool
 }
 
 // Logger is a default implementation of ILogger interface
@@ -76,6 +92,10 @@ func (l *Logger) AddProcessor(processors ...IProcessor) {
 
 // Log logs new entry with specified level
 func (l *Logger) Log(level Level, args ...interface{}) {
+	if !l.handler.IsEnabledFor(level) {
+		return
+	}
+
 	entry := NewEntry(level, time.Now(), fmt.Sprint(args...))
 	for _, processor := range l.processors {
 		processor.Process(entry)
@@ -167,4 +187,44 @@ func (l *Logger) Alertf(format string, args ...interface{}) {
 // Emergencyf alias for log with emergency level
 func (l *Logger) Emergencyf(format string, args ...interface{}) {
 	l.Logf(LevelEmergency, format, args...)
+}
+
+// IsDebugEnabled returns true if logger is enabled for LevelDebug and false otherwise
+func (l *Logger) IsDebugEnabled() bool {
+	return l.handler.IsEnabledFor(LevelDebug)
+}
+
+// IsInfoEnabled returns true if logger is enabled for LevelInfo and false otherwise
+func (l *Logger) IsInfoEnabled() bool {
+	return l.handler.IsEnabledFor(LevelInfo)
+}
+
+// IsNoticeEnabled returns true if logger is enabled for LevelNotice and false otherwise
+func (l *Logger) IsNoticeEnabled() bool {
+	return l.handler.IsEnabledFor(LevelNotice)
+}
+
+// IsWarningEnabled returns true if logger is enabled for LevelWarning and false otherwise
+func (l *Logger) IsWarningEnabled() bool {
+	return l.handler.IsEnabledFor(LevelWarning)
+}
+
+// IsErrorEnabled returns true if logger is enabled for LevelError and false otherwise
+func (l *Logger) IsErrorEnabled() bool {
+	return l.handler.IsEnabledFor(LevelError)
+}
+
+// IsAlertEnabled returns true if logger is enabled for LevelAlert and false otherwise
+func (l *Logger) IsAlertEnabled() bool {
+	return l.handler.IsEnabledFor(LevelAlert)
+}
+
+// IsCriticalEnabled returns true if logger is enabled for LevelCritical and false otherwise
+func (l *Logger) IsCriticalEnabled() bool {
+	return l.handler.IsEnabledFor(LevelCritical)
+}
+
+// IsEmergencyEnabled returns true if logger is enabled for LevelEmergency and false otherwise
+func (l *Logger) IsEmergencyEnabled() bool {
+	return l.handler.IsEnabledFor(LevelEmergency)
 }
