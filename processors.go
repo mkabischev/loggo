@@ -12,24 +12,26 @@ type IProcessor interface {
 }
 
 // CalleeProcessor adds packageName and filename to entry fields
-type CalleeProcessor struct{}
+type CalleeProcessor struct {
+	shift int
+}
 
 // NewCalleeProcessor constructor for CalleeProcessor
-func NewCalleeProcessor() *CalleeProcessor {
-	return &CalleeProcessor{}
+func NewCalleeProcessor(shift int) *CalleeProcessor {
+	return &CalleeProcessor{shift: shift}
 }
 
 // Process adds two fields to entry:
 // _package - name of package where logger was called
 // _file - file:line where logger was called
 func (p *CalleeProcessor) Process(entry *Entry) {
-	entry.Fields["_package"] = getPackageName()
-	entry.Fields["_file"] = getFileName()
+	entry.Fields["_package"] = getPackageName(p.shift)
+	entry.Fields["_file"] = getFileName(p.shift)
 }
 
-func getPackageName() string {
+func getPackageName(shift int) string {
 	v := "???"
-	if pc, _, _, ok := runtime.Caller(4); ok {
+	if pc, _, _, ok := runtime.Caller(shift + 5); ok {
 		if f := runtime.FuncForPC(pc); f != nil {
 			v = formatFuncName(f.Name())
 		}
@@ -38,8 +40,8 @@ func getPackageName() string {
 	return v
 }
 
-func getFileName() string {
-	_, file, line, ok := runtime.Caller(4)
+func getFileName(shift int) string {
+	_, file, line, ok := runtime.Caller(shift + 5)
 	if !ok {
 		file = "???"
 		line = 0
