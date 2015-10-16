@@ -96,17 +96,24 @@ func (l *Logger) Log(level Level, args ...interface{}) {
 		return
 	}
 
-	entry := NewEntry(level, time.Now(), fmt.Sprint(args...))
+	l.handle(NewEntry(level, time.Now(), fmt.Sprint(args...)))
+}
+
+// Logf logs new entry with specified level
+func (l *Logger) Logf(level Level, format string, args ...interface{}) {
+	if !l.handler.IsEnabledFor(level) {
+		return
+	}
+
+	l.handle(NewEntry(level, time.Now(), fmt.Sprintf(format, args...)))
+}
+
+func (l *Logger) handle(entry *Entry) {
 	for _, processor := range l.processors {
 		processor.Process(entry)
 	}
 	entry.Fields["_module"] = l.name
 	l.handler.Handle(entry)
-}
-
-// Logf logs new entry with specified level
-func (l *Logger) Logf(level Level, format string, args ...interface{}) {
-	l.Log(level, fmt.Sprintf(format, args...))
 }
 
 // Debug alias for log with debug level
